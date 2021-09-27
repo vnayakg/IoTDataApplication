@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const { boolean } = require('webidl-conversions')
 
 const dataPointSchema = new mongoose.Schema({
     dateTime: {type: Date, required:true},
