@@ -25,10 +25,10 @@ const deviceSchema = new mongoose.Schema({
 })
 
 const userSchema = new mongoose.Schema({
-    userName:{type: String, required:true},
+    username:{type: String, required:true, unique: true},
     password:{type: String, required:true},//hashed
     name:{type: String,required:true },
-    phone:{type:String,required:true},
+    phone:{type:String,required:true, unique: true},
     isAdmin: {type: Boolean, default:false, required:true},
     isSuperAdmin: {type: Boolean, default:false},
     childrenIDs: {type: [mongoose.Types.ObjectId]},
