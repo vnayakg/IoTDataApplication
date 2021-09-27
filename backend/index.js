@@ -2,7 +2,13 @@ const http = require("http");
 const app = require("./app");
 const server = http.createServer(app);
 
+// Modals
 const User = require("./models/UserModel");
+
+// Middlewares
+const auth = require("./middleware/auth");
+
+// Packages
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -19,7 +25,7 @@ app.post("/user/login", async (req, res) => {
             username,
             password
         } = req.body;
-        
+
         // Validate user input
         if (!(username && password)) {
             return res.status(400).send("Invalid Inputs!");
@@ -45,7 +51,7 @@ app.post("/user/login", async (req, res) => {
             user.token = token;
 
             // user
-            res.status(200).json(user);
+            res.status(200).json({"JWT": token});
         } else {
             res.status(400).send("Invalid Credentials");
         }
@@ -115,12 +121,14 @@ app.post("/create/user", async (req, res) => {
         user.token = token;
 
         // return new user
-        res.status(201).json(user);
+        res.status(201).json({"JWT": token});
     } catch (err) {
         console.log(err);
     }
 });
 
-
+app.post("/dashboard", auth, (req, res) => {
+    res.status(200).send("Welcome 🙌 ");
+});
 
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
