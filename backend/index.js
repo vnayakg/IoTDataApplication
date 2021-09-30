@@ -1,49 +1,48 @@
-const http = require("http");
-const app = require("./app");
+const http = require('http');
+const app = require('./app');
 const server = http.createServer(app);
 
 // Modals
-const User = require("./models/UserModel");
+const User = require('./models/UserModel');
 
 // Middlewares
-const auth = require("./middleware/auth");
+const auth = require('./middleware/auth');
 
 // Packages
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
     res.send('Server is Running!');
 });
 
-app.post("/user/login", async (req, res) => {
+app.post('/user/login', async (req, res) => {
     try {
         // Get user input
-        const {
-            username,
-            password
-        } = req.body;
+        const { username, password } = req.body;
 
         // Validate user input
         if (!(username && password)) {
-            return res.status(400).send("Invalid Inputs!");
+            return res.status(400).send('Invalid Inputs!');
         }
 
         // Validate if user exist in our database
         const user = await User.findOne({
-            username
+            username,
         });
 
         if (user && (await bcrypt.compare(password, user.password))) {
             // Create token
-            const token = jwt.sign({
+            const token = jwt.sign(
+                {
                     user_id: user._id,
-                    username
+                    username,
                 },
-                process.env.TOKEN_KEY, {
-                    expiresIn: "2h",
+                process.env.TOKEN_KEY,
+                {
+                    expiresIn: '2h',
                 }
             );
 
@@ -51,48 +50,41 @@ app.post("/user/login", async (req, res) => {
             user.token = token;
 
             // user
-            res.status(200).json({"JWT": token});
+            res.status(200).json({ JWT: token });
         } else {
-            res.status(400).send("Invalid Credentials");
+            res.status(400).send('Invalid Credentials');
         }
     } catch (err) {
         console.log(err);
     }
 });
 
-app.post("/create/user", async (req, res) => {
+app.post('/create/user', async (req, res) => {
     try {
         // Get user input
-        const {
-            username,
-            password,
-            name,
-            phone,
-            isAdmin,
-            parentID,
-        } = req.body;
+        const { username, password, name, phone, isAdmin, parentID } = req.body;
 
         // Validate user input
         if (!(username && password && name && phone && isAdmin && parentID)) {
-            return res.status(400).send("All input is required");
+            return res.status(400).send('All input is required');
         }
 
         // check if user already exist
         // Validate if user exist in our database
         let oldUser = await User.findOne({
-            username
+            username,
         });
 
         if (oldUser) {
-            return res.status(409).send("Username Already Exist.");
+            return res.status(409).send('Username Already Exist.');
         }
 
         oldUser = await User.findOne({
-            phone
+            phone,
         });
 
         if (oldUser) {
-            return res.status(409).send("Phone Already Exist.");
+            return res.status(409).send('Phone Already Exist.');
         }
 
         //Encrypt user password
@@ -109,26 +101,28 @@ app.post("/create/user", async (req, res) => {
         });
 
         // Create token
-        const token = jwt.sign({
+        const token = jwt.sign(
+            {
                 user_id: user._id,
-                username
+                username,
             },
-            process.env.TOKEN_KEY, {
-                expiresIn: "2h",
+            process.env.TOKEN_KEY,
+            {
+                expiresIn: '2h',
             }
         );
         // save user token
         user.token = token;
 
         // return new user
-        res.status(201).json({"JWT": token});
+        res.status(201).json({ JWT: token });
     } catch (err) {
         console.log(err);
     }
 });
 
-app.post("/dashboard", auth, (req, res) => {
-    res.status(200).send("Welcome 🙌 ");
+app.post('/dashboard', auth, (req, res) => {
+    res.status(200).send('Welcome 🙌 ');
 });
 
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
