@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('express-async-errors');
 
 require('./config/database').connect();
 const devices = require('./routes/devices');
