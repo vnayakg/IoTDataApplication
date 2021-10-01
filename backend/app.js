@@ -11,10 +11,10 @@ const app = express();
 
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(error); // should be last
 
 // routes
 app.use('/devices', devices);
+app.use(error); // should be last
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server listening on port ${port}!`));
