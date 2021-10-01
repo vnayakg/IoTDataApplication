@@ -20,5 +20,4 @@ function validateDevice(device) {
   return schema.validate(device);
 }
 
-exports.Device = Device;
-exports.validate = validateDevice;
+module.exports = { Device, validateDevice };
