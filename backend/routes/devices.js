@@ -28,8 +28,49 @@ router.post('/', validate(validateDevice), async (req, res) => {
   res.status(200).send(device);
 });
 
+// deviceId = ObjectId of Device document
 router.get('/:deviceId', validateObjectId('deviceId'), async (req, res) => {
   const device = await Device.findById(req.params.deviceId);
+
+  if (!device)
+    return res.status(404).send('The device with given ID was not found');
+
+  res.status(200).send(device);
+});
+
+// use superAdmin middleware
+// deviceId = ObjectId of Device document
+router.put(
+  '/:deviceId',
+  [validateObjectId('deviceId'), validate(validateDevice)],
+  async (req, res) => {
+    let device = await Device.findOne({ deviceType: req.body.deviceType });
+    if (device)
+      return res
+        .status(400)
+        .send(`Device with deviceType ${req.body.deviceType} already exists`);
+
+    device = await Device.findByIdAndUpdate(
+      req.params.deviceId,
+      {
+        deviceType: req.body.deviceType,
+        description: req.body.description,
+        deviceIDsInUse: req.body.deviceIDsInUse,
+      },
+      { new: true }
+    );
+
+    if (!device)
+      return res.status(404).send('The device with given ID was not found');
+
+    res.status(200).send(device);
+  }
+);
+
+// use superAdmin middleware
+// deviceId = ObjectId of Device document
+router.delete('/:deviceId', validateObjectId('deviceId'), async (req, res) => {
+  const device = await Device.findByIdAndDelete(req.params.deviceId);
 
   if (!device)
     return res.status(404).send('The device with given ID was not found');
