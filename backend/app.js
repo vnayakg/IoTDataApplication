@@ -1,20 +1,22 @@
-require('dotenv').config();
-require('express-async-errors');
-const morgan = require('morgan');
+require('dotenv').config()
+require('express-async-errors')
+const morgan = require('morgan')
 
-require('./config/database').connect();
-const devices = require('./routes/devices');
-const error = require('./middleware/error');
+require('./config/database').connect()
+const devices = require('./routes/devices')
+const dataPoints = require('./routes/dataPoints')
+const error = require('./middleware/error')
 
-const express = require('express');
-const app = express();
+const express = require('express')
+const app = express()
 
-app.use(express.json());
-app.use(morgan('dev'));
+app.use(express.json())
+app.use(morgan('dev'))
 
 // routes
-app.use('/devices', devices);
-app.use(error); // should be last
+app.use('/devices', devices)
+app.use('/data', dataPoints)
+app.use(error) // should be last
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server listening on port ${port}!`));
+const port = process.env.PORT || 3000
+app.listen(port, () => console.log(`Server listening on port ${port}!`))
