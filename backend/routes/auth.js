@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 
 const { User, validateLogin } = require('../models/user');
 const validate = require('../middleware/validate');
+const Session = require('../models/session');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -14,10 +16,23 @@ router.post('/login', validate(validateLogin), async (req, res) => {
   if (!validPassword)
     return res.status(400).send('Invalid username or password');
 
-  const token = user.generateAuthToken();
+  let token;
+
+  let session = await Session.findOne({ username: req.body.username });
+
+  if (!session) {
+    token = user.generateAuthToken();
+    session = new Session({ username: req.body.username, token });
+    await session.save();
+  } else token = session.token;
+
   res.status(200).send(token);
 });
 
-// /logout
+router.post('/logout', auth, async (req, res) => {
+  await Session.findOneAndDelete({ username: req.user.username });
+
+  res.status(200).send('Logged out successfully');
+});
 
 module.exports = router;
