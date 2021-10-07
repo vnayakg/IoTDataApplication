@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, required: true, unique: true },
   isAdmin: { type: Boolean, default: false, required: true },
   isSuperAdmin: { type: Boolean, default: false },
-  parentID: { type: mongoose.Types.ObjectId, required: true },
-  childrenIDs: { type: [mongoose.Types.ObjectId] },
+  parentID: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
+  childrenIDs: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
   assignedDevices: {
     type: [{ deviceType: Number, deviceID: Number }],
     required: true,
