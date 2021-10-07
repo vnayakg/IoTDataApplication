@@ -2,6 +2,7 @@ const express = require('express');
 const { Device, validateDevice } = require('../models/device');
 const validate = require('../middleware/validate');
 const validateObjectId = require('../middleware/validateObjectId');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -45,7 +46,7 @@ router.put(
   [validateObjectId('deviceId'), validate(validateDevice)],
   async (req, res) => {
     let device = await Device.findOne({ deviceType: req.body.deviceType });
-    if (device)
+    if (device && device._id === req.param.deviceId)
       return res
         .status(400)
         .send(`Device with deviceType ${req.body.deviceType} already exists`);
