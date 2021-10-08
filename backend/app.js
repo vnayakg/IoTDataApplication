@@ -4,6 +4,7 @@ const morgan = require('morgan');
 
 require('./config/database').connect();
 const devices = require('./routes/devices');
+const sensors = require('./routes/sensors');
 const dataPoints = require('./routes/dataPoints');
 const auth = require('./routes/auth');
 const users = require('./routes/users');
@@ -19,6 +20,7 @@ app.use(morgan('dev'));
 app.use('/auth', auth);
 app.use('/users', users);
 app.use('/devices', devices);
+app.use('/sensors', sensors);
 app.use('/data', dataPoints);
 app.use(error); // should be last
 

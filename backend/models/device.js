@@ -20,4 +20,13 @@ function validateDevice(device) {
   return schema.validate(device);
 }
 
-module.exports = { Device, validateDevice };
+function validateUpdate(device) {
+  const schema = Joi.object({
+    description: Joi.string().required(),
+    deviceIDsInUse: Joi.number().required().min(1),
+  });
+
+  return schema.validate(device);
+}
+
+module.exports = { Device, validateDevice, validateUpdate };
