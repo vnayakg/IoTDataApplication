@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 
 const { User, validateRegister, validateUpdate } = require('../models/user');
+const Session = require('../models/session');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -66,7 +67,10 @@ router.post('/reset', auth, async (req, res) => {
     password: hash,
   }).select('-password');
 
-  res.status(200).send(updatedUser);
+  const updatedToken = updatedUser.generateAuthToken();
+  await Session.findOneAndUpdate({ username }, { token: updatedToken });
+
+  res.status(200).send({ updatedUser, updatedToken });
 });
 
 // update user info
