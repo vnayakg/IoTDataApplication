@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     type: [{ deviceType: Number, deviceID: Number }],
     required: true,
   },
+  timestamp:{type: Date}
 });
 
 userSchema.methods.generateAuthToken = function () {
@@ -56,4 +57,13 @@ function validateLogin(user) {
   return schema.validate(user);
 }
 
-module.exports = { User, validateRegister, validateLogin };
+function validateUpdate(user) {
+  const schema = Joi.object({
+    name: Joi.string().required(),
+    phone: Joi.string()
+  });
+
+  return schema.validate(user);
+}
+
+module.exports = { User, validateRegister, validateLogin, validateUpdate };

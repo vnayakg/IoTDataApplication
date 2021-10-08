@@ -7,4 +7,4 @@ else
     exit 1
 fi
 
-mongo 127.0.0.1/iotApplication mongoInit.js
+mongo 127.0.0.1/test mongoInit.js

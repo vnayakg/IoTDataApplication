@@ -1,24 +1,25 @@
-const express = require('express')
-const { DataPoint, validateDataPoint } = require('../models/dataPoint')
-const validate = require('../middleware/validate')
-const router = express.Router()
+const express = require("express");
+const { DataPoint, validateDataPoint } = require("../models/dataPoint");
+const validate = require("../middleware/validate");
+const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   //TODO:
   //1. check access rights with jwt
-  const { dateTime, deviceId, sensorId, sensorType, deviceType } = req.body
+  const { dateTime, deviceId, sensorId, sensorType, deviceType } = req.body;
+
   const data = await DataPoint.find({
     deviceId,
     sensorId,
     sensorType,
     deviceType,
     dateTime: { $gte: dateTime.from, $lte: dateTime.to },
-  }).sort('dateTime')
+  }).sort("dateTime");
 
-  res.status(200).send(data)
-})
+  res.status(200).send(data);
+});
 
-router.post('/', validate(validateDataPoint), async (req, res) => {
+router.post("/", validate(validateDataPoint), async (req, res) => {
   const {
     dateTime,
     deviceID,
@@ -27,7 +28,7 @@ router.post('/', validate(validateDataPoint), async (req, res) => {
     noOfSensors,
     deviceType,
     values,
-  } = req.body
+  } = req.body;
 
   let datapoint = new DataPoint({
     dateTime,
@@ -37,11 +38,11 @@ router.post('/', validate(validateDataPoint), async (req, res) => {
     sensorType,
     sensorID,
     values,
-  })
+  });
 
-  await datapoint.save()
+  await datapoint.save();
 
-  res.status(200).send(datapoint)
-})
+  res.status(200).send(datapoint);
+});
 
-module.exports = router
+module.exports = router;
