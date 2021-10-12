@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
     type: [{ deviceType: Number, deviceID: Number }],
     required: true,
   },
-  timestamp:{type: Date}
+  timestamp:{type: Date},
+  height: {type: Number},
 });
 
 userSchema.methods.generateAuthToken = function () {

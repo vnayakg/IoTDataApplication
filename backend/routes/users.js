@@ -6,6 +6,7 @@ const Session = require('../models/session');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const superAdmin = require('../middleware/superAdmin');
 
 const router = express.Router();
 
@@ -92,6 +93,37 @@ router.get('/', [auth, admin], async (req, res) => {
   let users = await User.find().select('-password');
 
   res.status(200).send(users);
+});
+
+router.delete('/:username', [auth, superAdmin], async (req, res) => {
+  const user = await User.findOne({ username: req.params.username });
+
+  if (!user)
+    return res
+      .status(404)
+      .send('The user with given username was not found');
+
+  if (user.superAdmin)
+    return res
+      .status(400)
+      .send('You cannot destroy God!');
+
+  if (user._id == req.user._id)
+    return res
+      .status(400)
+      .send('You cannot destroy yourself!');
+
+  const parent = await User.findById({_id: user.parentID});
+
+  await User.findByIdAndUpdate(parent.childrenIDs, { $push: { $each: user.childrenIDs } });
+
+  for(const childId in user.childrenIDs){
+    User.findByIdAndUpdate(childId, {parentID: parent._id});
+  }
+
+  await User.findByIdAndDelete(user._id);
+
+
 });
 
 module.exports = router;

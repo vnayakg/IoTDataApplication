@@ -8,6 +8,7 @@ const sensors = require('./routes/sensors');
 const dataPoints = require('./routes/dataPoints');
 const auth = require('./routes/auth');
 const users = require('./routes/users');
+const assign = require('./routes/assign');
 const error = require('./middleware/error');
 
 const express = require('express');
@@ -22,6 +23,7 @@ app.use('/users', users);
 app.use('/devices', devices);
 app.use('/sensors', sensors);
 app.use('/data', dataPoints);
+app.use('/assign',assign);
 app.use(error); // should be last
 
 const port = process.env.PORT || 3000;

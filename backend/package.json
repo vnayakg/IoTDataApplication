@@ -6,7 +6,8 @@
     "scripts": {
         "start": "node app.js",
         "dev": "nodemon app.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "pretest": "eslint --ignore-path .gitignore ."
     },
     "author": "Fresh Express",
     "license": "ISC",
@@ -22,6 +23,8 @@
         "socket.io": "^4.2.0"
     },
     "devDependencies": {
+        "eslint": "^7.32.0",
+        "eslint-config-strongloop": "^2.1.0",
         "nodemon": "^2.0.13"
     }
 }
