@@ -104,7 +104,7 @@ router.delete('/:username', [auth, superAdmin], async (req, res) => {
       .status(404)
       .send('The user with given username was not found');
 
-  if (user.superAdmin)
+  if (user.isSuperAdmin)
     return res
       .status(400)
       .send('You cannot destroy God!');

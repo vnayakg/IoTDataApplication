@@ -5,11 +5,15 @@ const DataPoint = mongoose.model(
   'DataPoint',
   new mongoose.Schema({
     dateTime: { type: Date, required: true },
-    deviceType: { type: Number, required: true },
-    deviceID: { type: Number, required: true },
+    device: {
+      deviceType: { type: Number, required: true },
+      deviceID: { type: Number, required: true },
+    },
     noOfSensors: { type: Number, required: true },
-    sensorType: { type: Number, required: true },
-    sensorID: { type: Number, required: true },
+    sensor: {
+      sensorType: { type: Number, required: true },
+      sensorID: { type: Number, required: true },
+    },
     values: { type: Array, required: true },
   }),
 )

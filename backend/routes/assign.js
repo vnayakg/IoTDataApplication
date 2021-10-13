@@ -24,7 +24,7 @@ router.post(
 
         if (device.deviceIDsInUse <= deviceId) return res.status(400).send('Invalid device id');
 
-        if (!user.assignedDevices.includes({ deviceType: deviceType, deviceID: deviceId }) || !user.childrenIDs.includes(parentId))
+        if ((!user.assignedDevices.includes({ deviceType: deviceType, deviceID: deviceId }) || !user.childrenIDs.includes(parentId)) && !user.isSuperAdmin)
             return res.status(400).send('Invalid Request!');
 
         const parent = await User.findOne({ _id: parentId });
