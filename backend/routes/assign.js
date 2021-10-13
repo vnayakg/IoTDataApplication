@@ -4,6 +4,7 @@ const { User } = require('../models/user');
 const { Device } = require('../models/device');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
+const validateObjectId = require('../middleware/validateObjectId')
 
 const router = express.Router();
 
@@ -11,14 +12,17 @@ router.post(
     '/device',
     [auth, admin],
     async (req, res) => {
-
         const { parentId, deviceId, deviceType } = req.body;
-        const user = await User.findById({ _id: req.user._id });
+
+        if (!validateObjectId(parentId))
+            return res.status(404).send('Invalid ID of parent given');
+
+        const user = await User.findById(req.user._id);
         const device = await Device.findOne({ deviceType: deviceType });
 
         if (!device) return res.status(400).send('Invalid device type');
 
-        if (!device.deviceIDsInUse.includes(deviceId)) return res.status(400).send('Invalid device id');
+        if (device.deviceIDsInUse <= deviceId) return res.status(400).send('Invalid device id');
 
         if (!user.assignedDevices.includes({ deviceType: deviceType, deviceID: deviceId }) || !user.childrenIDs.includes(parentId))
             return res.status(400).send('Invalid Request!');
@@ -29,6 +33,8 @@ router.post(
             return res.status(202).send('Already Alloted to User');
 
         await User.findByIdAndUpdate(parentId, { $push: { assignedDevices: { deviceType: deviceType, deviceID: deviceId } } });
+
+        res.status(200).send('Successfully assigned');
     }
 );
 
@@ -36,52 +42,77 @@ router.post(
     '/parent',
     [auth, admin],
     async (req, res) => {
-
         const { parentId, childId } = req.body;
-        let parent = await User.findById({ _id: parentId });
-        let child = await Device.findById({ _id: childId });
+
+        if (!validateObjectId(parentId) && !validateObjectId(childId))
+            return res.status(404).send('One or more invalid IDs given');
+            
+        if(parentId === childId) return res.status(400).send('Can not assign child of self as self');
+
+        let parent = await User.findById(parentId);
+        let child = await User.findById(childId);
 
         if (!parent || !child)
-            return res.status(400).send('Invalid parent or clild id');
+            return res.status(404).send('One or more users not found');
 
-        if (!parent.admin) return res.status(400).send('Parent is not a Admin');
+        if (!parent.isAdmin) return res.status(400).send('Parent is not a Admin');
 
-        if(parent._id == child._id) return res.status(400).send('Not Allowed');
+        if (child.parentID.toString() === parentId)
+            return res.status(400).send('Already assigned');
 
-        if (!req.user.superAdmin) {
-            let parent_track = parent;
-            let child_track = child;
-
-            while (parent_track.height < child_track.height) {
-                child_track = await User.findById({ _id: child_track.parentID });
-            }
-
-            while (parent_track.height > child_track.height) {
-                parent_track = await User.findById({ _id: parent_track.parentID });
-            }
-
-            while (parent_track._id != child_track._id) {
-                parent_track = await User.findById({ _id: parent_track.parentID });
-                child_track = await User.findById({ _id: child_track.parentID });
-            }
-
-            let ancestor = parent_track;
-            let verified = false;
-
-            while (!ancestor.superAdmin) {
-                if (ancestor._id == req.user._id) {
-                    verified = true;
-                    break;
-                }
-                ancestor = await User.findById({ _id: ancestor.parentID });
-            }
-
-            if (!verified) return res.status(400).send('You are not allowed to do this!');
+        let parent_track = parent;
+        let parent_height = 0;
+        while (parent_track) {
+            parent_track = await User.findById(parent_track.parentID);
+            parent_height++;
         }
 
-        await User.findByIdAndUpdate(child.parentID, { $pullAll: { childrenIDs: child._id } });
+        let child_track = child;
+        let child_height = 0;
+        while (child_track) {
+            child_track = await User.findById(child_track.parentID);
+            child_height++;
+        }
+
+        parent_track = parent;
+        child_track = child;
+
+        while (parent_height < child_height) {
+            child_track = await User.findById(child_track.parentID);
+            child_height--;
+        }
+        
+        while (parent_height > child_height) {
+            parent_track = await User.findById(parent_track.parentID);
+            parent_height--;
+        }
+        
+        while (parent_track._id.toString() !== child_track._id.toString()) {
+            parent_track = await User.findById(parent_track.parentID);
+            child_track = await User.findById(child_track.parentID);
+        }
+
+        let ancestor = parent_track;
+        let verified = false;
+
+        if (ancestor._id.toString() === childId)
+            return res.status(400).res('Can not set a user as a child of its descendent');
+
+        while (ancestor) {
+            if (ancestor._id.toString() === req.user._id) {
+                verified = true;
+                break;
+            }
+            ancestor = await User.findById(ancestor.parentID);
+        }
+
+        if (!verified) return res.status(400).send('You can not change relation of users which are not below you');
+
+        await User.findByIdAndUpdate(child.parentID, { $pullAll: { childrenIDs: [child._id] } });
         await User.findByIdAndUpdate(child._id, { parentID: parent._id });
         await User.findByIdAndUpdate(parent._id, { $push: { childrenIDs: child._id } });
+
+        res.status(200).send('Successfully assigned');
     }
 );
 

@@ -25,6 +25,7 @@ router.post(
     user = await User.findOne({ phone });
     if (user)
       return res.status(400).send(`User with phone ${phone} already exists`);
+
     const timestamp = new Date();
     user = new User({
       username,
