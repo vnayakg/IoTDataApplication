@@ -18,12 +18,13 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 // routes
+app.get('/', (req, res) => res.status(200).send('I am alive'));
 app.use('/auth', auth);
 app.use('/users', users);
 app.use('/devices', devices);
 app.use('/sensors', sensors);
 app.use('/data', dataPoints);
-app.use('/assign',assign);
+app.use('/assign', assign);
 app.use(error); // should be last
 
 const port = process.env.PORT || 3000;

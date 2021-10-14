@@ -1,35 +1,27 @@
-const express = require("express");
-const { DataPoint, validateDataPoint } = require("../models/dataPoint");
+const express = require('express');
+
+const { DataPoint, validateDataPoint } = require('../models/dataPoint');
 const { User } = require('../models/user');
-const validate = require("../middleware/validate");
+const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
+
 const router = express.Router();
 
-router.get("/", [auth], async (req, res) => {
-  
-  const user = await User.findById(req.user._id);
-
-  if (!user.isSuperAdmin) {
-    const devices = user.assignedDevices;
-
-    const devicesTrimed = [];
-
-    for(let i=0; i< devices.length;i++){
-      console.log(devices[i]);
-      devicesTrimed.push({deviceType: devices[i]["deviceType"], deviceID:devices[i]["deviceID"]});
-    }
-
-    let data = [];
-
-    data.push(await DataPoint.find({ device: { $in: devicesTrimed } }));
+router.get('/', [auth], async (req, res) => {
+  if (req.user.isSuperAdmin) {
+    const data = await DataPoint.find();
 
     return res.status(200).send(data);
   }
-  
-  res.status(200).send(await DataPoint.find());
+
+  const user = await User.findById(req.user._id);
+
+  const data = await DataPoint.find({ device: { $in: user.assignedDevices } });
+
+  res.status(200).send(data);
 });
 
-router.post("/", validate(validateDataPoint), async (req, res) => {
+router.post('/', validate(validateDataPoint), async (req, res) => {
   const {
     dateTime,
     deviceID,
