@@ -1,7 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 
-const { User, validateRegister, validateUpdate } = require('../models/user');
+const {
+  User,
+  validateRegister,
+  validateUpdate,
+  validateReset,
+} = require('../models/user');
 const Session = require('../models/session');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
@@ -48,7 +53,7 @@ router.post(
 );
 
 //reset password
-router.post('/reset', auth, async (req, res) => {
+router.post('/reset', [auth, validate(validateReset)], async (req, res) => {
   const { _id, username } = req.user;
   const { password, newPassword } = req.body;
 
@@ -80,7 +85,11 @@ router.put('/update', [auth, validate(validateUpdate)], async (req, res) => {
   const { _id } = req.user;
   const { name, phone } = req.body;
 
-  let user = await User.findByIdAndUpdate(
+  let user = await User.findOne({ phone });
+  if (user && user._id.toString() !== _id)
+    return res.status(400).send(`User with phone ${phone} already exists`);
+
+  user = await User.findByIdAndUpdate(
     _id,
     { name, phone },
     { new: true }
@@ -100,31 +109,24 @@ router.delete('/:username', [auth, superAdmin], async (req, res) => {
   const user = await User.findOne({ username: req.params.username });
 
   if (!user)
-    return res
-      .status(404)
-      .send('The user with given username was not found');
+    return res.status(404).send('The user with given username was not found');
 
-  if (user.isSuperAdmin)
-    return res
-      .status(400)
-      .send('You cannot destroy God!');
+  if (user.isSuperAdmin) return res.status(400).send('You cannot destroy God!');
 
   if (user._id == req.user._id)
-    return res
-      .status(400)
-      .send('You cannot destroy yourself!');
+    return res.status(400).send('You cannot destroy yourself!');
 
-  const parent = await User.findById({_id: user.parentID});
+  const parent = await User.findById({ _id: user.parentID });
 
-  await User.findByIdAndUpdate(parent.childrenIDs, { $push: { $each: user.childrenIDs } });
+  await User.findByIdAndUpdate(parent.childrenIDs, {
+    $push: { $each: user.childrenIDs },
+  });
 
-  for(const childId in user.childrenIDs){
-    User.findByIdAndUpdate(childId, {parentID: parent._id});
+  for (const childId in user.childrenIDs) {
+    User.findByIdAndUpdate(childId, { parentID: parent._id });
   }
 
   await User.findByIdAndDelete(user._id);
-
-
 });
 
 module.exports = router;
