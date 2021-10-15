@@ -4,10 +4,11 @@ const { DataPoint, validateDataPoint } = require('../models/dataPoint');
 const { User } = require('../models/user');
 const validate = require('../middleware/validate');
 const auth = require('../middleware/auth');
+const apikey = require('../middleware/apikey');
 
 const router = express.Router();
 
-router.get('/', [auth], async (req, res) => {
+router.get('/', auth, async (req, res) => {
   if (req.user.isSuperAdmin) {
     const data = await DataPoint.find();
 
@@ -21,7 +22,7 @@ router.get('/', [auth], async (req, res) => {
   res.status(200).send(data);
 });
 
-router.post('/', validate(validateDataPoint), async (req, res) => {
+router.post('/', [apikey, validate(validateDataPoint)], async (req, res) => {
   const {
     dateTime,
     deviceID,
