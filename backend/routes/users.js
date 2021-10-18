@@ -113,20 +113,24 @@ router.delete('/:username', [auth, superAdmin], async (req, res) => {
 
   if (user.isSuperAdmin) return res.status(400).send('You cannot destroy God!');
 
-  if (user._id == req.user._id)
+  if (user._id.toString() === req.user._id)
     return res.status(400).send('You cannot destroy yourself!');
 
-  const parent = await User.findById({ _id: user.parentID });
-
-  await User.findByIdAndUpdate(parent.childrenIDs, {
-    $push: { $each: user.childrenIDs },
+  const parent = await User.findByIdAndUpdate(user.parentID, {
+    $pull: { childrenIDs: user._id },
   });
 
-  for (const childId in user.childrenIDs) {
-    User.findByIdAndUpdate(childId, { parentID: parent._id });
+  await User.findByIdAndUpdate(parent._id, {
+    $push: { childrenIDs: { $each: user.childrenIDs } },
+  });
+
+  for (const childId of user.childrenIDs) {
+    await User.findByIdAndUpdate(childId, { parentID: parent._id });
   }
 
   await User.findByIdAndDelete(user._id);
+
+  res.status(200).send('User deleted successfully');
 });
 
 module.exports = router;

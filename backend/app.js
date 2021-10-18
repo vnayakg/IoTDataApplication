@@ -2,7 +2,8 @@ require('dotenv').config();
 require('express-async-errors');
 const morgan = require('morgan');
 
-require('./config/database').connect();
+require('./config/startup');
+
 const devices = require('./routes/devices');
 const sensors = require('./routes/sensors');
 const dataPoints = require('./routes/dataPoints');

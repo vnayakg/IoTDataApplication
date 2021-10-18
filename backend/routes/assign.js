@@ -63,6 +63,44 @@ router.post('/device', [auth, admin], async (req, res) => {
   res.status(200).send('Successfully assigned');
 });
 
+router.delete('/device', [auth, admin], async (req, res) => {
+  const { childId, deviceID, deviceType } = req.body;
+
+  if (!validateObjectId(childId))
+    return res.status(404).send('Invalid childId given');
+
+  if (childId === req.user._id)
+    return res.status(400).send('Can not self remove device');
+
+  const child = await User.findById(childId);
+
+  if (!child) return res.status(404).send('Child not found');
+  if (child.isSuperAdmin)
+    return res.status(400).send('You can not remove devices from god');
+
+  if (!child.hasDevice({ deviceType, deviceID }))
+    return res.status(404).send("Device not found in user's assigned devices");
+
+  if (!req.user.isSuperAdmin && child.parentID.toString() !== req.user._id)
+    return res
+      .status(400)
+      .send('You can not remove device from a user not directly under you');
+
+  const stack = [childId];
+
+  while (stack.length > 0) {
+    const user = await User.findByIdAndUpdate(stack.pop(), {
+      $pull: { assignedDevices: { deviceType, deviceID } },
+    });
+
+    for (const cID of user.childrenIDs) {
+      stack.push(cID);
+    }
+  }
+
+  res.status(200).send('Successfully removed');
+});
+
 router.post('/parent', [auth, admin], async (req, res) => {
   const { parentId, childId } = req.body;
 
@@ -116,19 +154,21 @@ router.post('/parent', [auth, admin], async (req, res) => {
   }
 
   let ancestor = parent_track;
-  let verified = false;
+  let verified = req.user.isSuperAdmin;
 
   if (ancestor._id.toString() === childId)
     return res
       .status(400)
       .res('Can not set a user as a child of its descendent');
 
-  while (ancestor) {
-    if (ancestor._id.toString() === req.user._id) {
-      verified = true;
-      break;
+  if (!req.isSuperAdmin) {
+    while (ancestor) {
+      if (ancestor._id.toString() === req.user._id) {
+        verified = true;
+        break;
+      }
+      ancestor = await User.findById(ancestor.parentID);
     }
-    ancestor = await User.findById(ancestor.parentID);
   }
 
   if (!verified)
@@ -137,12 +177,24 @@ router.post('/parent', [auth, admin], async (req, res) => {
       .send('You can not change relation of users which are not below you');
 
   await User.findByIdAndUpdate(child.parentID, {
-    $pullAll: { childrenIDs: [child._id] },
+    $pull: { childrenIDs: child._id },
   });
   await User.findByIdAndUpdate(child._id, { parentID: parent._id });
   await User.findByIdAndUpdate(parent._id, {
     $push: { childrenIDs: child._id },
   });
+
+  parent_track = parent;
+  let extraDevices = child.assignedDevices.filter((d) => !parent.hasDevice(d));
+  while (!parent_track.isSuperAdmin && extraDevices.length > 0) {
+    await User.findByIdAndUpdate(parent._id, {
+      $push: { assignedDevices: { $each: extraDevices } },
+    });
+
+    parent_track = await User.findById(parent_track.parentID);
+
+    extraDevices = extraDevices.filter((d) => !parent_track.hasDevice(d));
+  }
 
   res.status(200).send('Successfully assigned');
 });
