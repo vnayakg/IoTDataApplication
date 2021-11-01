@@ -26,7 +26,7 @@ function validateDataPoint(dataPoint) {
     noOfSensors: Joi.number().required(),
     sensorType: Joi.number().required(),
     sensorID: Joi.number().required(),
-    values: Joi.array().items(Joi.number()).required(),
+    values: Joi.array().required(),
   })
 
   return schema.validate(dataPoint)
