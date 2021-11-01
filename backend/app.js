@@ -1,6 +1,7 @@
 require('dotenv').config();
 require('express-async-errors');
 const morgan = require('morgan');
+const cors = require('cors');
 
 require('./config/startup');
 
@@ -17,6 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(cors({ origin: '*' }));
 
 // routes
 app.get('/', (req, res) => res.status(200).send('I am alive'));
