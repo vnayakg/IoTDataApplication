@@ -27,6 +27,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 
 import { Link, Switch, Route } from "react-router-dom";
 import Login from "./Login";
+import AddUser from "./AddUser";
 const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -251,7 +252,7 @@ export default function Dashboard() {
             <h1>Parent</h1>
           </Route>
           <Route path="/adduser">
-            <h1>add user</h1>
+           <AddUser/>
           </Route>
           <Route path="/devices">
             <h1>devices</h1>

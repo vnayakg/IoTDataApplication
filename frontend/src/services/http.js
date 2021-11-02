@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 import authToken from './authToken';
 
-const apiUrl = 'http://localhost:3001';
+const apiUrl = 'http://localhost:5000';
 
 const instance = axios.create({
   baseURL: apiUrl,
