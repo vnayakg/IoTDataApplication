@@ -29,6 +29,11 @@ import Button from '@mui/material/Button';
 import { Link, Switch, Route, Redirect } from 'react-router-dom';
 import Login from './Login';
 import AddUser from './AddUser';
+import Devices from './Devices';
+import Sensors from './Sensors';
+import AssignDevice from './AssignDevice';
+import AssignParent from './AssignParent';
+import Data from './Data';
 import asyncToast from '../services/asyncToast';
 import auth from '../services/auth';
 import authToken from '../services/authToken';
@@ -107,6 +112,8 @@ export default function Dashboard({ user, setUser, ...props }) {
     setAnchorEl(null);
   };
 
+  const [route, setRoute] = React.useState('');
+
   const logout = async () => {
     if (!user) return;
     const toastId = asyncToast.load('Logging out...');
@@ -125,7 +132,6 @@ export default function Dashboard({ user, setUser, ...props }) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {console.log(user)}
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -214,20 +220,26 @@ export default function Dashboard({ user, setUser, ...props }) {
         <Divider />
         <List>
           <ListItem
-            selected={true}
             component={Link}
-            to="/login"
+            to="/"
             button
-            key="login"
+            key="dashboard"
+            selected={route === '/'}
           >
             <ListItemIcon>
               <MailIcon />
             </ListItemIcon>
 
-            <ListItemText primary="Login" />
+            <ListItemText primary="Dashboard" />
           </ListItem>
 
-          <ListItem component={Link} to="/devices" button key="devices">
+          <ListItem
+            component={Link}
+            to="/devices"
+            button
+            key="devices"
+            selected={route === '/devices'}
+          >
             <ListItemIcon>
               <MailIcon />
             </ListItemIcon>
@@ -235,7 +247,13 @@ export default function Dashboard({ user, setUser, ...props }) {
             <ListItemText primary="Devices" />
           </ListItem>
 
-          <ListItem component={Link} to="/sensors" button key="sensors">
+          <ListItem
+            component={Link}
+            to="/sensors"
+            button
+            key="sensors"
+            selected={route === '/sensors'}
+          >
             <ListItemIcon>
               <MailIcon />
             </ListItemIcon>
@@ -243,7 +261,12 @@ export default function Dashboard({ user, setUser, ...props }) {
             <ListItemText primary="Sensors" />
           </ListItem>
 
-          <ListItemButton onClick={handleClick}>
+          <ListItemButton
+            onClick={handleClick}
+            selected={['/adduser', '/assigndevice', '/assignparent'].includes(
+              route
+            )}
+          >
             <ListItemIcon>
               <InboxIcon />
             </ListItemIcon>
@@ -252,21 +275,39 @@ export default function Dashboard({ user, setUser, ...props }) {
           </ListItemButton>
           <Collapse in={expandUser} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItemButton component={Link} to="adduser" sx={{ pl: 4 }}>
+              <ListItemButton
+                component={Link}
+                to="adduser"
+                sx={{ pl: 4 }}
+                key="adduser"
+                selected={route === '/adduser'}
+              >
                 <ListItemIcon>
                   <MailIcon />
                 </ListItemIcon>
                 <ListItemText primary="Add New User" />
               </ListItemButton>
 
-              <ListItemButton component={Link} to="assigndevice" sx={{ pl: 4 }}>
+              <ListItemButton
+                component={Link}
+                to="assigndevice"
+                sx={{ pl: 4 }}
+                key="assigndevice"
+                selected={route === '/assigndevice'}
+              >
                 <ListItemIcon>
                   <MailIcon />
                 </ListItemIcon>
                 <ListItemText primary="Assign Device" />
               </ListItemButton>
 
-              <ListItemButton component={Link} to="assignparent" sx={{ pl: 4 }}>
+              <ListItemButton
+                component={Link}
+                to="assignparent"
+                sx={{ pl: 4 }}
+                key="assignparent"
+                selected={route === '/assignparent'}
+              >
                 <ListItemIcon>
                   <MailIcon />
                 </ListItemIcon>
@@ -281,25 +322,29 @@ export default function Dashboard({ user, setUser, ...props }) {
         <DrawerHeader />
         <Switch>
           <Route path="/login">
-            {!user ? <Login setUser={setUser} /> : <Redirect to="/" />}
+            {!user ? (
+              <Login setUser={setUser} setRoute={setRoute} />
+            ) : (
+              <Redirect to="/" />
+            )}
           </Route>
           <Route path="/assigndevice">
-            <h1>add devices</h1>
+            <AssignDevice setRoute={setRoute} />
           </Route>
           <Route path="/assignparent">
-            <h1>Parent</h1>
+            <AssignParent setRoute={setRoute} />
           </Route>
           <Route path="/adduser">
-            <AddUser />
+            <AddUser user={user} setRoute={setRoute} />
           </Route>
           <Route path="/devices">
-            <h1>devices</h1>
+            <Devices setRoute={setRoute} />
           </Route>
           <Route path="/sensors">
-            <h1>sensors</h1>
+            <Sensors setRoute={setRoute} />
           </Route>
           <Route path="/">
-            <h1>data</h1>
+            <Data setRoute={setRoute} />
           </Route>
         </Switch>
       </Main>

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -36,16 +36,17 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignIn({ setUser }) {
+export default function SignIn({ setUser, setRoute }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  useEffect(() => setRoute('/login'), [setRoute]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
     const toastId = asyncToast.load('Logging in...');
     try {
-      const { data: jwt } = await auth.login({
-        username: data.get('username'),
-        password: data.get('password'),
-      });
+      const { data: jwt } = await auth.login({ username, password });
       authToken.setToken(jwt);
       setUser(authToken.getUser());
       asyncToast.update(toastId, 'success', 'Logged in successfully!');
@@ -88,6 +89,7 @@ export default function SignIn({ setUser }) {
               name="username"
               autoComplete="username"
               autoFocus
+              onChange={(event) => setUsername(event.target.value)}
             />
             <TextField
               margin="normal"
@@ -98,6 +100,7 @@ export default function SignIn({ setUser }) {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={(event) => setPassword(event.target.value)}
             />
             {/* <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -108,8 +111,9 @@ export default function SignIn({ setUser }) {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={!username || !password}
             >
-              Sign In
+              Log In
             </Button>
             {/* <Grid container>
               <Grid item xs>

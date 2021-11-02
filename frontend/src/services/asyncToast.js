@@ -7,7 +7,7 @@ const asyncToast = {
       render: message,
       type,
       isLoading: false,
-      autoClose: true,
+      autoClose: 2500,
     }),
 };
 
