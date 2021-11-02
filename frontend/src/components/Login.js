@@ -36,7 +36,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignIn() {
+export default function SignIn({ setUser }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -47,6 +47,7 @@ export default function SignIn() {
         password: data.get('password'),
       });
       authToken.setToken(jwt);
+      setUser(authToken.getUser());
       asyncToast.update(toastId, 'success', 'Logged in successfully!');
     } catch (error) {
       console.log(error.response);
