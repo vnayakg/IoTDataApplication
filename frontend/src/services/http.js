@@ -20,12 +20,15 @@ instance.interceptors.response.use(null, (error) => {
     error.response.status >= 400 &&
     error.response.status < 500;
 
-  if (!expectedError) {
-    console.log(error);
-    toast.error('An unexpected error occuered');
-  }
+  if (!expectedError) toast.error('An unexpected error occuered!');
 
-  console.log(error);
+  if (error.response.status === 401)
+    toast.error('Invalid credentials! Please login again.');
+
+  if (error.response.status === 403)
+    toast.error('You do not have access to this resource');
+
+  console.log(error.response);
 
   return Promise.reject(error);
 });

@@ -20,7 +20,7 @@ import asyncToast from '../services/asyncToast';
 import users from '../services/users';
 import LoginAdminCheck from './LoginAdminCheck';
 
-export default function AddUser({ user, setRoute }) {
+export default function AddUser({ user, logout, setRoute }) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [passwordFields, setPasswordFields] = useState({
@@ -30,7 +30,8 @@ export default function AddUser({ user, setRoute }) {
   const [phone, setPhone] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => setRoute('/adduser'), [setRoute]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setRoute('/adduser'), []);
 
   const handleSubmit = async () => {
     const toastID = asyncToast.load('Adding User...');
@@ -53,6 +54,7 @@ export default function AddUser({ user, setRoute }) {
       setIsAdmin(false);
     } catch (error) {
       asyncToast.update(toastID, 'error', error.response.data);
+      if (error.response.status === 401) logout();
     }
   };
   const handleClickShowPassword = () => {

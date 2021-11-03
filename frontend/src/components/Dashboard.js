@@ -25,6 +25,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Button from '@mui/material/Button';
+import { toast } from 'react-toastify';
 
 import { Link, Switch, Route, Redirect } from 'react-router-dom';
 import Login from './Login';
@@ -37,6 +38,7 @@ import Data from './Data';
 import asyncToast from '../services/asyncToast';
 import auth from '../services/auth';
 import authToken from '../services/authToken';
+import DeviceForm from './DeviceForm';
 
 const drawerWidth = 240;
 
@@ -130,6 +132,13 @@ export default function Dashboard({ user, setUser, ...props }) {
     }
   };
 
+  const logoutUtil = () => {
+    authToken.removeToken();
+    setUser(null);
+    toast.info('Logged out!');
+    props.history.push('/login');
+  };
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -161,6 +170,12 @@ export default function Dashboard({ user, setUser, ...props }) {
             >
               Login
             </Button>
+          )}
+
+          {user && (
+            <Typography variant="p" noWrap component="div">
+              Hi, {user.name}
+            </Typography>
           )}
 
           {user && (
@@ -335,10 +350,13 @@ export default function Dashboard({ user, setUser, ...props }) {
             <AssignParent setRoute={setRoute} />
           </Route>
           <Route path="/adduser">
-            <AddUser user={user} setRoute={setRoute} />
+            <AddUser user={user} setRoute={setRoute} logout={logoutUtil} />
+          </Route>
+          <Route path="/devices/:deviceType">
+            <DeviceForm user={user} logout={logoutUtil} />
           </Route>
           <Route path="/devices">
-            <Devices setRoute={setRoute} />
+            <Devices user={user} setRoute={setRoute} logout={logoutUtil} />
           </Route>
           <Route path="/sensors">
             <Sensors setRoute={setRoute} />

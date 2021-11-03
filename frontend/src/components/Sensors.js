@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
 const Sensors = ({ setRoute }) => {
-  useEffect(() => setRoute('/sensors'), [setRoute]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setRoute('/sensors'), []);
 
   return <h1>sensors</h1>;
 };

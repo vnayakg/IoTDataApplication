@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
 const AssignDevice = ({ setRoute }) => {
-  useEffect(() => setRoute('/assigndevice'), [setRoute]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setRoute('/assigndevice'), []);
 
   return <h1>assign devices</h1>;
 };

@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
 const AssignParent = ({ setRoute }) => {
-  useEffect(() => setRoute('/assignparent'), [setRoute]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setRoute('/assignparent'), []);
 
   return <h1>assign parent</h1>;
 };

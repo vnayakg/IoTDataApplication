@@ -40,7 +40,8 @@ export default function SignIn({ setUser, setRoute }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => setRoute('/login'), [setRoute]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setRoute('/login'), []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
