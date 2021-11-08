@@ -22,5 +22,9 @@ function deleteDevice(deviceType) {
   return http.delete(`${route}/${deviceType}`);
 }
 
-const methods = { getAllDevices };
+function getUserDevices(){
+  return http.get(`${route}/userdevices`)
+}
+
+const methods = { getAllDevices, getUserDevices };
 export default methods;

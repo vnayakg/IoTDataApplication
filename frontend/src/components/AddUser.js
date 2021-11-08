@@ -23,12 +23,12 @@ import LoginAdminCheck from './LoginAdminCheck';
 export default function AddUser({ user, logout, setRoute }) {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const [passwordFields, setPasswordFields] = useState({
     password: '',
     showPassword: false,
   });
-  const [phone, setPhone] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setRoute('/adduser'), []);

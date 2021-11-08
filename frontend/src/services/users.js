@@ -15,6 +15,9 @@ function update() {
     return http.post(`${route}/update`);
 }
 
+function getChildren(){
+  return http.get(`${route}/children`)
+}
 
-const methods = { register, reset, update };
+const methods = { register, reset, update, getChildren };
 export default methods;

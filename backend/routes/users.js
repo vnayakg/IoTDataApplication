@@ -133,4 +133,14 @@ router.delete('/:username', [auth, superAdmin], async (req, res) => {
   res.status(200).send('User deleted successfully');
 });
 
+router.get('/children',auth, async (req, res)=>{
+  if(req.user.isSuperAdmin){
+    let users = await User.find().select('-password');
+    return res.status(200).send(users)
+  }
+
+  const user = await User.findOne({username: req.user.username}).populate('childrenIDs')
+  res.status(200).send(user.childrenIDs)
+})
+
 module.exports = router;
