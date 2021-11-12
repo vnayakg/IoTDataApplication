@@ -8,6 +8,9 @@ const asyncToast = {
       type,
       isLoading: false,
       autoClose: 2500,
+      draggable: true,
+      closeOnClick: true,
+      closeButton: true,
     }),
 };
 

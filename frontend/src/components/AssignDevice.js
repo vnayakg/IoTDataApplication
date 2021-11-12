@@ -14,8 +14,6 @@ import Assign from "../services/assign";
 import asyncToast from "../services/asyncToast";
 
 const AssignDevice = ({ setRoute }) => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-
     const [devices, setDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState("");
     const [currentChildren, setCurrentChildren] = useState("");
@@ -44,6 +42,7 @@ const AssignDevice = ({ setRoute }) => {
 
         loadDevices();
         loadChildren();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleDeviceChange = (event) => {

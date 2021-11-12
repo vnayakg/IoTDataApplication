@@ -39,6 +39,7 @@ import asyncToast from '../services/asyncToast';
 import auth from '../services/auth';
 import authToken from '../services/authToken';
 import DeviceForm from './DeviceForm';
+import SensorForm from './SensorForm';
 
 const drawerWidth = 240;
 
@@ -87,7 +88,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-export default function Dashboard({ user, setUser, ...props }) {
+export default function Dashboard({ user, setUser, history }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -128,7 +129,7 @@ export default function Dashboard({ user, setUser, ...props }) {
       setUser(null);
       asyncToast.update(toastId, 'success', 'Logged out successfully!');
       handleClose();
-      props.history.push('/login');
+      history.push('/login');
     }
   };
 
@@ -136,7 +137,7 @@ export default function Dashboard({ user, setUser, ...props }) {
     authToken.removeToken();
     setUser(null);
     toast.info('Logged out!');
-    props.history.push('/login');
+    history.push('/login');
   };
 
   return (
@@ -358,8 +359,11 @@ export default function Dashboard({ user, setUser, ...props }) {
           <Route path="/devices">
             <Devices user={user} setRoute={setRoute} logout={logoutUtil} />
           </Route>
+          <Route path="/sensors/:sensorType">
+            <SensorForm user={user} setRoute={setRoute} logout={logoutUtil} />
+          </Route>
           <Route path="/sensors">
-            <Sensors setRoute={setRoute} />
+            <Sensors user={user} setRoute={setRoute} logout={logoutUtil} />
           </Route>
           <Route path="/">
             <Data setRoute={setRoute} />

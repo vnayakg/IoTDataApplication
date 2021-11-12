@@ -5,24 +5,24 @@ import { Container, Typography, Box, TextField, Button } from '@mui/material';
 import LoginAdminCheck from './LoginAdminCheck';
 import { toast } from 'react-toastify';
 import asyncToast from '../services/asyncToast';
-import devices from '../services/devices';
+import sensors from '../services/sensors';
 
-const DeviceForm = ({ user, logout }) => {
-  const { deviceType: paramDT } = useParams();
-  const [deviceType, setDeviceType] = useState(
-    paramDT !== 'new' ? paramDT : ''
+const SensorForm = ({ user, logout }) => {
+  const { sensorType: paramST } = useParams();
+  const [sensorType, setSensorType] = useState(
+    paramST !== 'new' ? paramST : ''
   );
   const [description, setDescription] = useState('');
-  const [deviceIDsInUse, setDeviceIDsInUse] = useState('');
+  const [sensorIDsInUse, setSensorIDsInUse] = useState('');
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    const loadDevice = async () => {
+    const loadSensor = async () => {
       try {
-        const { data } = await devices.getDevice(deviceType);
-        toast.success('Device fetched successfully!');
+        const { data } = await sensors.getSensor(sensorType);
+        toast.success('Sensor fetched successfully!');
         setDescription(data.description);
-        setDeviceIDsInUse(data.deviceIDsInUse);
+        setSensorIDsInUse(data.sensorIDsInUse);
       } catch (error) {
         toast.error(error.response.data);
         setNotFound(true);
@@ -30,25 +30,25 @@ const DeviceForm = ({ user, logout }) => {
       }
     };
 
-    if (paramDT !== 'new') loadDevice();
+    if (paramST !== 'new') loadSensor();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = async () => {
-    if (paramDT === 'new') {
-      const toastId = asyncToast.load('Adding device...');
+    if (paramST === 'new') {
+      const toastId = asyncToast.load('Adding sensor...');
       try {
-        await devices.addNewDevice({ deviceType, description, deviceIDsInUse });
-        asyncToast.update(toastId, 'success', 'Device added successfully!');
+        await sensors.addNewSensor({ sensorType, description, sensorIDsInUse });
+        asyncToast.update(toastId, 'success', 'Sensor added successfully!');
       } catch (error) {
         asyncToast.update(toastId, 'error', error.response.data);
         if (error.response.status === 401) logout();
       }
     } else {
-      const toastId = asyncToast.load('Updating device...');
+      const toastId = asyncToast.load('Updating sensor...');
       try {
-        await devices.editDevice(deviceType, { description, deviceIDsInUse });
-        asyncToast.update(toastId, 'success', 'Device updated successfully!');
+        await sensors.editSensor(sensorType, { description, sensorIDsInUse });
+        asyncToast.update(toastId, 'success', 'Sensor updated successfully!');
       } catch (error) {
         asyncToast.update(toastId, 'error', error.response.data);
         if (error.response.status === 401) logout();
@@ -59,7 +59,7 @@ const DeviceForm = ({ user, logout }) => {
   return (
     <Container component="main" maxWidth="xs">
       <Typography component="h1" variant="h5">
-        {paramDT !== 'new' ? 'Update Device' : 'Add New Device'}
+        {paramST !== 'new' ? 'Update Sensor' : 'Add New Sensor'}
       </Typography>
       <Box
         sx={{
@@ -76,12 +76,12 @@ const DeviceForm = ({ user, logout }) => {
               InputProps={{ inputProps: { min: 1 } }}
               sx={{ marginTop: 3 }}
               fullWidth
-              value={deviceType}
-              onChange={(e) => setDeviceType(e.target.value)}
-              id="deviceType"
-              label="Device Type"
+              value={sensorType}
+              onChange={(e) => setSensorType(e.target.value)}
+              id="sensorType"
+              label="Sensor Type"
               variant="outlined"
-              disabled={paramDT !== 'new'}
+              disabled={paramST !== 'new'}
               required
             />
             <TextField
@@ -99,10 +99,10 @@ const DeviceForm = ({ user, logout }) => {
               InputProps={{ inputProps: { min: 1 } }}
               sx={{ marginTop: 3 }}
               fullWidth
-              value={deviceIDsInUse}
-              onChange={(e) => setDeviceIDsInUse(e.target.value)}
-              id="deviceIDsInUse"
-              label="Device IDs In Use"
+              value={sensorIDsInUse}
+              onChange={(e) => setSensorIDsInUse(e.target.value)}
+              id="sensorIDsInUse"
+              label="Sensor IDs In Use"
               variant="outlined"
               required
             />
@@ -112,14 +112,14 @@ const DeviceForm = ({ user, logout }) => {
               sx={{ marginTop: 3 }}
               disabled={
                 notFound ||
-                deviceType === '' ||
+                sensorType === '' ||
                 description === '' ||
-                deviceIDsInUse === ''
+                sensorIDsInUse === ''
               }
               variant="contained"
               onClick={handleSubmit}
             >
-              {paramDT !== 'new' ? 'Update Device' : 'Add Device'}
+              {paramST !== 'new' ? 'Update Sensor' : 'Add Sensor'}
             </Button>
           </form>
         )}
@@ -128,4 +128,4 @@ const DeviceForm = ({ user, logout }) => {
   );
 };
 
-export default DeviceForm;
+export default SensorForm;

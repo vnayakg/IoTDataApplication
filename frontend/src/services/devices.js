@@ -22,9 +22,16 @@ function deleteDevice(deviceType) {
   return http.delete(`${route}/${deviceType}`);
 }
 
-function getUserDevices(){
-  return http.get(`${route}/userdevices`)
+function getUserDevices() {
+  return http.get(`${route}/userdevices`);
 }
 
-const methods = { getAllDevices, getUserDevices };
+const methods = {
+  getAllDevices,
+  getDevice,
+  addNewDevice,
+  editDevice,
+  deleteDevice,
+  getUserDevices,
+};
 export default methods;

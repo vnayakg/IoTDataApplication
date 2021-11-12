@@ -10,6 +10,9 @@ import {
   TableBody,
   Button,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from '@mui/material';
 import { EditOutlined, DeleteOutline } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
@@ -18,6 +21,7 @@ import { StyledTableCell } from './common/StyledTable';
 
 import LoginAdminCheck from './LoginAdminCheck';
 import devices from '../services/devices';
+import { toast } from 'react-toastify';
 import asyncToast from '../services/asyncToast';
 
 const Devices = ({ user, logout, setRoute }) => {
@@ -26,16 +30,37 @@ const Devices = ({ user, logout, setRoute }) => {
 
   const [rows, setRows] = useState([]);
 
+  const [deviceTypeToDelete, setDeviceTypeToDelete] = useState(null);
+  const [deleteAlert, setDeleteAlert] = useState(false);
+  const alertOpen = (deviceType) => {
+    setDeviceTypeToDelete(deviceType);
+    setDeleteAlert(true);
+  };
+  const alertClose = (confirm) => {
+    setDeleteAlert(false);
+    console.log(confirm);
+    if (confirm) deleteRow(deviceTypeToDelete);
+  };
+
   const getRows = async () => {
-    const toastId = asyncToast.load('Fetching devices...');
     try {
       const { data } = await devices.getAllDevices();
-      console.log(data);
-      asyncToast.update(toastId, 'success', 'Devices fetched successfully!');
+      toast.success('Devices fetched successfully!');
       setRows(data);
     } catch (error) {
-      console.log(error.response);
-      asyncToast.update(toastId, 'error', 'Could not fetch devices!');
+      toast.error('Could not fetch devices!');
+      if (error.response.status === 401) logout();
+    }
+  };
+
+  const deleteRow = async (deviceType) => {
+    const toastId = asyncToast.load('Deleting device...');
+    try {
+      await devices.deleteDevice(deviceType);
+      asyncToast.update(toastId, 'success', 'Device deleted successfully!');
+      getRows();
+    } catch (error) {
+      asyncToast.update(toastId, 'error', error.response.data);
       if (error.response.status === 401) logout();
     }
   };
@@ -49,7 +74,11 @@ const Devices = ({ user, logout, setRoute }) => {
         Devices
       </Typography>
       <Box
-        sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
       >
         <LoginAdminCheck user={user} />
         {user && (
@@ -88,7 +117,9 @@ const Devices = ({ user, logout, setRoute }) => {
                     <TableRow
                       hover
                       key={row.deviceType}
-                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      sx={{
+                        '&:last-child td, &:last-child th': { border: 0 },
+                      }}
                     >
                       <StyledTableCell align="center">
                         {row.deviceType}
@@ -114,7 +145,10 @@ const Devices = ({ user, logout, setRoute }) => {
                             </IconButton>
                           </StyledTableCell>
                           <StyledTableCell align="center">
-                            <IconButton sx={{ padding: '4px' }}>
+                            <IconButton
+                              sx={{ padding: '4px' }}
+                              onClick={() => alertOpen(row.deviceType)}
+                            >
                               <DeleteOutline
                                 fontSize="small"
                                 sx={{ color: 'red' }}
@@ -131,6 +165,14 @@ const Devices = ({ user, logout, setRoute }) => {
           </>
         )}
       </Box>
+
+      <Dialog open={deleteAlert} onClose={() => alertClose(false)}>
+        <DialogTitle>Are you sure you want to delete this device?</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => alertClose(true)}>OK</Button>
+          <Button onClick={() => alertClose(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

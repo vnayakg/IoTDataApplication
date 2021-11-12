@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div className="App">
-      <ToastContainer />
+      <ToastContainer autoClose={2500} />
       <Route
         path="/"
         render={(props) => (
