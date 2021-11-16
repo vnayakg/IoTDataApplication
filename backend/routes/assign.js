@@ -26,6 +26,9 @@ router.post('/device', [auth, admin], async (req, res) => {
   const device = await Device.findOne({ deviceType: deviceType });
 
   if (!device) return res.status(400).send('Invalid device type');
+
+  if (!deviceID) return res.status(400).send('Device id not given');
+
   if (device.deviceIDsInUse <= deviceID)
     return res.status(400).send('Invalid device id');
 
