@@ -3,7 +3,10 @@ const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 
 const assignedDeviceSchema = new mongoose.Schema(
-  { deviceType: Number, deviceID: Number },
+  {
+    deviceType: { type: Number, required: true },
+    deviceID: { type: Number, required: true },
+  },
   { _id: false }
 );
 
