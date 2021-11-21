@@ -40,6 +40,7 @@ import auth from '../services/auth';
 import authToken from '../services/authToken';
 import DeviceForm from './DeviceForm';
 import SensorForm from './SensorForm';
+import Account from './AccountDetails'
 
 const drawerWidth = 240;
 
@@ -206,7 +207,7 @@ export default function Dashboard({ user, setUser, history }) {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>My account</MenuItem>
+            <MenuItem component={Link} to='/account' onClick={handleClose}>My account</MenuItem>
             <MenuItem onClick={logout}>Logout</MenuItem>
           </Menu>
         </Toolbar>
@@ -365,9 +366,13 @@ export default function Dashboard({ user, setUser, history }) {
           <Route path="/sensors">
             <Sensors user={user} setRoute={setRoute} logout={logoutUtil} />
           </Route>
+          <Route path='/account'>
+            <Account user={user}/>
+          </Route>
           <Route path="/">
             <Data setRoute={setRoute} />
           </Route>
+
         </Switch>
       </Main>
     </Box>

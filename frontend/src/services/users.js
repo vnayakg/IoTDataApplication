@@ -7,12 +7,12 @@ function register(data) {
   return http.post(`${route}/register`, data);
 }
 
-function reset() {
-  return http.post(`${route}/reset`);
+function reset(data) {
+  return http.post(`${route}/reset`, data);
 }
 
-function update() {
-    return http.post(`${route}/update`);
+function update(data) {
+    return http.put(`${route}/update`, data);
 }
 
 function getChildren(){
