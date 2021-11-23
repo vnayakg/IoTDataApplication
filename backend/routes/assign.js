@@ -68,7 +68,7 @@ router.post('/device', [auth, admin], async (req, res) => {
 
 router.delete('/device', [auth, admin], async (req, res) => {
   const { childId, deviceID, deviceType } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   if (!validateObjectId(childId))
     return res.status(404).send('Invalid childId given');
 
@@ -105,6 +105,7 @@ router.delete('/device', [auth, admin], async (req, res) => {
 });
 
 router.post('/parent', [auth, admin], async (req, res) => {
+  console.log(req.body);
   const { parentId, childId } = req.body;
 
   if (!validateObjectId(parentId) && !validateObjectId(childId))

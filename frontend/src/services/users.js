@@ -12,12 +12,16 @@ function reset(data) {
 }
 
 function update(data) {
-    return http.put(`${route}/update`, data);
+  return http.put(`${route}/update`, data);
 }
 
-function getChildren(){
-  return http.get(`${route}/children`)
+function getChildren() {
+  return http.get(`${route}/children`);
 }
 
-const methods = { register, reset, update, getChildren };
+function getAllChildren() {
+  return http.get(`${route}/children/all`);
+}
+
+const methods = { register, reset, update, getChildren, getAllChildren };
 export default methods;

@@ -346,10 +346,10 @@ export default function Dashboard({ user, setUser, history }) {
             )}
           </Route>
           <Route path="/assigndevice">
-            <AssignDevice setRoute={setRoute} />
+            <AssignDevice user={user} setRoute={setRoute} />
           </Route>
           <Route path="/assignparent">
-            <AssignParent setRoute={setRoute} />
+            <AssignParent user={user} setRoute={setRoute} />
           </Route>
           <Route path="/adduser">
             <AddUser user={user} setRoute={setRoute} logout={logoutUtil} />
@@ -370,7 +370,7 @@ export default function Dashboard({ user, setUser, history }) {
             <Account user={user}/>
           </Route>
           <Route path="/">
-            <Data setRoute={setRoute} />
+            <Data user={user} setRoute={setRoute} />
           </Route>
 
         </Switch>
