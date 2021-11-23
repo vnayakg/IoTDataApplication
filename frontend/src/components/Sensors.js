@@ -104,7 +104,10 @@ const Sensors = ({ user, logout, setRoute }) => {
                     <StyledTableCell align="center">
                       Sensor IDs In Use
                     </StyledTableCell>
-                    <StyledTableCell align="center">Values</StyledTableCell>
+                    <StyledTableCell align="center">Value 1</StyledTableCell>
+                    <StyledTableCell align="center">Value 2</StyledTableCell>
+                    <StyledTableCell align="center">Value 3</StyledTableCell>
+                    <StyledTableCell align="center">Value 4</StyledTableCell>
                     {user.isSuperAdmin && (
                       <>
                         <StyledTableCell align="center"></StyledTableCell>
@@ -132,7 +135,16 @@ const Sensors = ({ user, logout, setRoute }) => {
                         {row.sensorIDsInUse}
                       </StyledTableCell>
                       <StyledTableCell align="center">
-                        {row.valueNames.join(', ')}
+                        {row.valueNames[0]}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.valueNames[1]}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.valueNames[2]}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.valueNames[3]}
                       </StyledTableCell>
                       {user.isSuperAdmin && (
                         <>
