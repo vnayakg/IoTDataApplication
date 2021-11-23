@@ -133,14 +133,41 @@ router.delete('/:username', [auth, superAdmin], async (req, res) => {
   res.status(200).send('User deleted successfully');
 });
 
-router.get('/children',auth, async (req, res)=>{
-  if(req.user.isSuperAdmin){
-    let users = await User.find().select('-password');
-    return res.status(200).send(users)
+router.get('/children', auth, async (req, res) => {
+  if (req.user.isSuperAdmin) {
+    let users = await User.find({ isSuperAdmin: false }).select('-password');
+    return res.status(200).send(users);
   }
 
-  const user = await User.findOne({username: req.user.username}).populate('childrenIDs')
-  res.status(200).send(user.childrenIDs)
-})
+  const user = await User.findOne({ username: req.user.username }).populate(
+    'childrenIDs'
+  );
+  res.status(200).send(user.childrenIDs);
+});
+
+router.get('/children/all', auth, async (req, res) => {
+  if (req.user.isSuperAdmin) {
+    let users = await User.find({ isSuperAdmin: false }).select('-password');
+    return res.status(200).send(users);
+  }
+
+  const stack = [];
+  const children = [];
+
+  const parent = await User.findById(req.user._id);
+  for (const cID of parent.childrenIDs) {
+    stack.push(cID);
+  }
+
+  while (stack.length > 0) {
+    const user = await User.findById(stack.pop());
+    children.push(user);
+    for (const cID of user.childrenIDs) {
+      stack.push(cID);
+    }
+  }
+
+  res.status(200).send(children);
+});
 
 module.exports = router;
