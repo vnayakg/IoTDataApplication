@@ -17,8 +17,9 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  Container
 } from '@mui/material/';
-import { EditOutlined, DeleteOutline } from '@mui/icons-material';
+import { DeleteOutline } from '@mui/icons-material';
 import { StyledTableCell } from './common/StyledTable';
 
 import Device from '../services/devices';
@@ -39,7 +40,6 @@ const AssignDevice = ({ user, setRoute }) => {
     setRoute('/assigndevice');
     loadDevices();
     loadChildren();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDevices = async () => {
@@ -159,7 +159,7 @@ const AssignDevice = ({ user, setRoute }) => {
   };
 
   return (
-    <>
+    <Container maxWidth="lg">
       <Typography component="h1" variant="h5">
         Assign Device
       </Typography>
@@ -309,7 +309,7 @@ const AssignDevice = ({ user, setRoute }) => {
           </Dialog>
         </>
       )}
-    </>
+    </Container>
   );
 };
 

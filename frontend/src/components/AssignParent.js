@@ -7,6 +7,7 @@ import {
   Typography,
   Box,
   Button,
+  Container
 } from '@mui/material';
 
 import LoginAdminCheck from './LoginAdminCheck';
@@ -55,7 +56,7 @@ const AssignParent = ({ user, setRoute }) => {
   };
 
   return (
-    <>
+    <Container maxWidth="lg">
       <Typography component="h1" variant="h5">
         Assign Parent
       </Typography>
@@ -133,7 +134,7 @@ const AssignParent = ({ user, setRoute }) => {
       >
         Assign
       </Button>
-    </>
+    </Container>
   );
 };
 

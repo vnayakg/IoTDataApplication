@@ -69,7 +69,7 @@ const Sensors = ({ user, logout, setRoute }) => {
   useEffect(() => getRows(), []);
 
   return (
-    <Container component="main" maxWidth="md">
+    <Container component="main" maxWidth="lg">
       <Typography component="h1" variant="h5">
         Sensors
       </Typography>

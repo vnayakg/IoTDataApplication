@@ -69,8 +69,8 @@ const Devices = ({ user, logout, setRoute }) => {
   useEffect(() => getRows(), []);
 
   return (
-    <Container component="main" maxWidth="md">
-      <Typography component="h1" variant="h5">
+    <Container component="main" maxWidth="lg">
+      <Typography component="h1" variant="h4">
         Devices
       </Typography>
       <Box

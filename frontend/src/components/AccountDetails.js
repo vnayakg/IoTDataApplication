@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     TextField,
     Button,
@@ -9,11 +9,14 @@ import {
     IconButton,
     InputAdornment,
 } from "@mui/material";
-import asyncToast from "../services/asyncToast";
-import User from "../services/users";
+
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+import asyncToast from "../services/asyncToast";
+import User from "../services/users";
 import authToken from "../services/authToken";
+
 function AccountDetails({ user }) {
     const [name, setName] = useState(user.name);
     const [phone, setPhone] = useState(user.phone);
@@ -48,15 +51,13 @@ function AccountDetails({ user }) {
                 newPassword: passwordFields.password,
             };
             const res = await User.reset(data);
-            console.log(res)
-            authToken.setToken(res.data.updatedToken)
+            console.log(res);
+            authToken.setToken(res.data.updatedToken);
             asyncToast.update(
                 toastID,
                 "success",
                 "Password changed successfully"
             );
-
-
         } catch (err) {
             asyncToast.update(toastID, "error", err.response.data);
         }
