@@ -31,43 +31,43 @@ const AssignDevice = ({ setRoute }) => {
     const [currentDevice, setCurrentDevice] = useState("");
     const [currentChildren, setCurrentChildren] = useState("");
     const [children, setChildren] = useState([]);
-    const [deviceID, setDeviceID] = useState('')
-    const [ids, setIds] = useState([])
+    const [deviceID, setDeviceID] = useState("");
+    const [ids, setIds] = useState([]);
 
     useEffect(() => {
         setRoute("/assigndevice");
-
-        const loadDevices = async () => {
-            try {
-                const res = await Device.getUserDevices();
-                console.log(res.data);
-                setDevices(res.data);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        const loadChildren = async () => {
-            try {
-                const res = await User.getChildren();
-                setChildren(res.data);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
         loadDevices();
         loadChildren();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const loadDevices = async () => {
+        try {
+            const res = await Device.getUserDevices();
+            console.log(res.data);
+            setDevices(res.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const loadChildren = async () => {
+        try {
+            const res = await User.getChildren();
+            setChildren(res.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const handleDeviceChange = (event) => {
-        const dev = event.target.value
+        const dev = event.target.value;
         setCurrentDevice(dev);
-        const currIds = []
-        for(let i = 1; i<= dev.deviceIDsInUse; i++){
+        const currIds = [];
+        for (let i = 1; i <= dev.deviceIDsInUse; i++) {
             currIds.push(i);
         }
-        setIds(currIds)
+        setIds(currIds);
         console.log(currIds);
     };
 
@@ -77,12 +77,12 @@ const AssignDevice = ({ setRoute }) => {
         );
         console.log(curr);
         setCurrentChildren(curr[0]);
-
-
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        loadDevices();
+        loadChildren();
         const toastID = asyncToast.load("Assigning device...");
         try {
             const data = {
@@ -95,8 +95,25 @@ const AssignDevice = ({ setRoute }) => {
             const res = await Assign.assignDevice(data);
             console.log(res.status);
             if (res.status !== 200)
+
                 return asyncToast.update(toastID, "error", res.data);
-            else return asyncToast.update(toastID, "success", res.data);
+
+
+            else {
+
+                console.log("curr child",currentChildren)
+                const curr = children.filter(
+                    (child) => child._id === currentChildren._id
+                );
+
+                setCurrentChildren(curr[0]);
+                console.log("after child",currentChildren)
+                loadDevices();
+                loadChildren();
+
+                return asyncToast.update(toastID, "success", res.data);
+            }
+
         } catch (error) {
             asyncToast.update(toastID, "error", error.response.data);
             console.log(error);
@@ -106,25 +123,25 @@ const AssignDevice = ({ setRoute }) => {
     const [deviceToDelete, setDeviceToDelete] = useState(null);
     const [deleteAlert, setDeleteAlert] = useState(false);
     const alertOpen = (id, type) => {
-        setDeviceToDelete({deviceID: id, deviceType: type});
+        setDeviceToDelete({ deviceID: id, deviceType: type });
         setDeleteAlert(true);
     };
     const alertClose = (confirm) => {
         setDeleteAlert(false);
         console.log(confirm);
-        if (confirm){
-            removeDevice()
+        if (confirm) {
+            removeDevice();
         }
     };
 
-    const removeDevice = async()=>{
+    const removeDevice = async () => {
         const toastID = asyncToast.load("Assigning device...");
         try {
-            console.log("currentChildre",currentChildren)
+            console.log("currentChildre", currentChildren);
             const data = {
                 childId: currentChildren._id,
                 deviceID: deviceToDelete.deviceID,
-                deviceType: deviceToDelete.deviceType
+                deviceType: deviceToDelete.deviceType,
             };
             console.log(data);
             const res = await Assign.removeDevices(data);
@@ -132,13 +149,20 @@ const AssignDevice = ({ setRoute }) => {
             if (res.status !== 200)
                 return asyncToast.update(toastID, "error", res.data);
             else {
-                setDevices(devices.filter(device => device.deviceID !== data.deviceID && data.deviceType !== device.deviceType))
-                return asyncToast.update(toastID, "success", res.data);}
+                setDevices(
+                    devices.filter(
+                        (device) =>
+                            device.deviceID !== data.deviceID &&
+                            data.deviceType !== device.deviceType
+                    )
+                );
+                return asyncToast.update(toastID, "success", res.data);
+            }
         } catch (error) {
             asyncToast.update(toastID, "error", error.response.data);
             console.log(error);
         }
-    }
+    };
 
     return (
         <>
@@ -171,7 +195,11 @@ const AssignDevice = ({ setRoute }) => {
                     {devices.length &&
                         devices.map((device) => (
                             <MenuItem key={device._id} value={device}>
-                                {device.deviceIDsInUse+" "+ device.deviceType+" "+device.description}
+                                {device.deviceIDsInUse +
+                                    " " +
+                                    device.deviceType +
+                                    " " +
+                                    device.description}
                             </MenuItem>
                         ))}
                 </Select>
@@ -184,17 +212,14 @@ const AssignDevice = ({ setRoute }) => {
                     id="demo-simple-select"
                     label="Device"
                     value={deviceID}
-                    onChange={(e => setDeviceID(e.target.value))}
+                    onChange={(e) => setDeviceID(e.target.value)}
                 >
-                    { ids &&
-                        ids.map( id => (
+                    {ids &&
+                        ids.map((id) => (
                             <MenuItem key={id} value={id}>
-                            {id}
+                                {id}
                             </MenuItem>
-                        ))
-
-
-                    }
+                        ))}
                 </Select>
             </FormControl>
 
@@ -207,6 +232,7 @@ const AssignDevice = ({ setRoute }) => {
                 }}
             >
                 {currentChildren && (
+
                     <>
                         <Typography sx={{ mt: 2 }} variant="h6">
                             User Info:{" "}
@@ -254,7 +280,12 @@ const AssignDevice = ({ setRoute }) => {
                                 <StyledTableCell align="center">
                                     <IconButton
                                         sx={{ padding: "4px" }}
-                                        onClick={() => alertOpen(device.deviceID, device.deviceType)}
+                                        onClick={() =>
+                                            alertOpen(
+                                                device.deviceID,
+                                                device.deviceType
+                                            )
+                                        }
                                     >
                                         <DeleteOutline
                                             fontSize="small"

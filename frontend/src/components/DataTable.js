@@ -258,9 +258,9 @@ export default function EnhancedTable({currData}) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  React.useEffect(()=>{
-      console.log(currData)
-  })
+  // React.useEffect(()=>{
+  //     console.log(new Date(currData[0].dateTime).toLocaleString()))
+  // })
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -360,9 +360,9 @@ export default function EnhancedTable({currData}) {
                         scope="row"
                         padding="none"
                       >
-                        {row.dateTime.split('T')[0]}
+                        {new Date(row.dateTime).toLocaleString().split(',')[0]}
                       </TableCell>
-                      <TableCell align="right">{row.dateTime.split('T')[1]}</TableCell>
+                      <TableCell align="right">{new Date(row.dateTime).toLocaleString().split(',')[1]}</TableCell>
                       <TableCell align="right">{row.device.deviceType}</TableCell>
                       <TableCell align="right">{row.device.deviceID}</TableCell>
                       <TableCell align="right">{row.noOfSensors}</TableCell>
