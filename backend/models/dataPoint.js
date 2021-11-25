@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const Joi = require('joi')
+const mongoose = require('mongoose');
+const Joi = require('joi');
 
 const DataPoint = mongoose.model(
   'DataPoint',
@@ -15,8 +15,8 @@ const DataPoint = mongoose.model(
       sensorID: { type: Number, required: true },
     },
     values: { type: Array, required: true },
-  }),
-)
+  })
+);
 
 function validateDataPoint(dataPoint) {
   const schema = Joi.object({
@@ -27,9 +27,30 @@ function validateDataPoint(dataPoint) {
     sensorType: Joi.number().required(),
     sensorID: Joi.number().required(),
     values: Joi.array().required(),
-  })
+  });
 
-  return schema.validate(dataPoint)
+  return schema.validate(dataPoint);
 }
 
-module.exports = { DataPoint, validateDataPoint }
+function validateFilter(filter) {
+  const schema = Joi.object({
+    device: Joi.object().keys({
+      deviceType: Joi.number().required(),
+      deviceID: Joi.number().required(),
+    }),
+    sensor: Joi.object().keys({
+      sensorType: Joi.number().required(),
+      sensorID: Joi.number().required(),
+    }),
+    timeRange: Joi.object()
+      .keys({
+        from: Joi.date(),
+        to: Joi.date(),
+      })
+      .min(1),
+  }).with('sensor', 'device');
+
+  return schema.validate(filter);
+}
+
+module.exports = { DataPoint, validateDataPoint, validateFilter };
