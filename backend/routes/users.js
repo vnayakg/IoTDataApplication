@@ -147,19 +147,14 @@ router.get('/children', auth, async (req, res) => {
 
 router.get('/children/all', auth, async (req, res) => {
   if (req.user.isSuperAdmin) {
-    let users = await User.find({ isSuperAdmin: false })
+    const users = await User.find({ isSuperAdmin: false })
       .populate('parentID')
       .select('-password');
     return res.status(200).send(users);
   }
 
-  const stack = [];
+  const stack = [req.user._id];
   const children = [];
-
-  const parent = await User.findById(req.user._id);
-  for (const cID of parent.childrenIDs) {
-    stack.push(cID);
-  }
 
   while (stack.length > 0) {
     const user = await User.findById(stack.pop())

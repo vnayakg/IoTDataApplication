@@ -26,7 +26,7 @@ function Copyright(props) {
     >
       {'Copyright © '}
       <Link color="inherit" href="# ">
-        Suyash Sanket Vinayak
+        IoT Data Application
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}

@@ -17,7 +17,7 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
-  Container
+  Container,
 } from '@mui/material/';
 import { DeleteOutline } from '@mui/icons-material';
 import { StyledTableCell } from './common/StyledTable';
@@ -195,11 +195,7 @@ const AssignDevice = ({ user, setRoute }) => {
               {devices.length &&
                 devices.map((device) => (
                   <MenuItem key={device._id} value={device}>
-                    {device.deviceIDsInUse +
-                      ' ' +
-                      device.deviceType +
-                      ' ' +
-                      device.description}
+                    {device.deviceType + ' ' + device.description}
                   </MenuItem>
                 ))}
             </Select>
@@ -255,8 +251,8 @@ const AssignDevice = ({ user, setRoute }) => {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Device ID</TableCell>
                 <TableCell>Device Type</TableCell>
+                <TableCell>Device ID</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -271,9 +267,9 @@ const AssignDevice = ({ user, setRoute }) => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      {device.deviceID}
+                      {device.deviceType}
                     </TableCell>
-                    <TableCell>{device.deviceType}</TableCell>
+                    <TableCell>{device.deviceID}</TableCell>
                     <StyledTableCell align="center">
                       <IconButton
                         sx={{ padding: '4px' }}

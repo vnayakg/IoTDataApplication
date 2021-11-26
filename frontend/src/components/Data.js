@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import {CircularProgress} from '@mui/material'
+import { CircularProgress, Typography } from '@mui/material';
 
 import DataPoint from '../services/dataPoints';
 
 import LoginAdminCheck from './LoginAdminCheck';
 import DataTable from './DataTable';
 
-
 const Data = ({ user, setRoute }) => {
   const [currData, setCurrData] = useState([]);
+  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     setRoute('/');
@@ -16,7 +16,8 @@ const Data = ({ user, setRoute }) => {
     const getData = async () => {
       try {
         const res = await DataPoint.getDataPoints();
-        setCurrData(res.data);
+        setCurrData(res.data.data);
+        setShowLoading(false);
       } catch (err) {
         console.log(err.response);
       }
@@ -30,7 +31,13 @@ const Data = ({ user, setRoute }) => {
       <LoginAdminCheck user={user} />
       {user &&
         (currData.length === 0 ? (
-          <CircularProgress />
+          showLoading ? (
+            <CircularProgress />
+          ) : (
+            <Typography component="h1" variant="h5">
+              No data available for you
+            </Typography>
+          )
         ) : (
           <DataTable currData={currData} user={user} />
         ))}
